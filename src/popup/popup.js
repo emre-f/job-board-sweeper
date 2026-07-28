@@ -111,8 +111,7 @@ async function refreshStats() {
     const res = await chrome.tabs.sendMessage(tab.id, { type: 'jpf-getStats' });
     if (res && res.ok) {
       status.textContent =
-        `${res.host} - ${res.stats.blocked} blocked · ` +
-        `${res.stats.duped} seen before · ${res.stats.scanned} scanned`;
+        `${res.host} - ${res.stats.blocked} blocked · ${res.stats.scanned} scanned`;
       return;
     }
   } catch (e) {

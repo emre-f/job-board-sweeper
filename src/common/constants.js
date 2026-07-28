@@ -5,10 +5,6 @@ const JPF_DEFAULTS = {
   settings: {
     enabled: true,
     blockedAction: 'hide', // what to do with blocklisted companies: 'hide' | 'dim'
-    dupeEnabled: true,
-    dupeAction: 'dim', // what to do with already-seen jobs: 'dim' | 'hide'
-    dupeThreshold: 2, // treat a job as duplicate from this sighting onward
-    seenTtlDays: 5, // forget a job after this many days without seeing it
     revealMode: false, // outline filtered jobs instead of hiding/dimming them
     debug: false, // verbose console logging, prefixed [JPF]
   },

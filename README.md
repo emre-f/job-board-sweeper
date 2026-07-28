@@ -1,9 +1,10 @@
-# Job Board Sweeper
+# <img src="icons/icon128.png" width="36" alt="" align="top" /> Job Board Sweeper
 
-A Chrome extension that cleans up job boards by hiding **cross-posting spam companies**
-(Jobright, Lensa, data-labeling gig farms, …) and **jobs you've already seen**.
+A Chrome extension that cleans up job boards by hiding **spam companies**:
+job aggregators (Jobright, Lensa, …), AI data-labelling farms, and any custom
+category you define.
 
-Works on **LinkedIn**, **Indeed**, and **Jobright.ai**.
+Works on **LinkedIn**, **Indeed**, and **Jobright** (More might be added later!).
 
 ## Why
 
@@ -40,17 +41,12 @@ click, and never see it again - across every job site I use.
     text if the card can't be detected);
   - popup → **Pick a job on the page** → click a card (Esc cancels).
   Every block shows an Undo toast.
-- **Duplicate detection** - remembers which jobs you've seen (locally). By default,
-  a job you've already seen gets **dimmed with a "Seen N×" badge** instead of hidden,
-  so nothing silently disappears that you might have missed the first time. You can
-  switch it to fully hide, tune the sighting threshold, and set how many days until
-  a job is forgotten.
 - **Reveal mode** - outlines filtered jobs in red instead of hiding them, so you can
   audit what the filter is doing.
-- **Badge counter** - the toolbar icon shows how many jobs were filtered on the
+- **Badge counter** - the toolbar icon shows how many jobs were blocked on the
   current tab; the popup shows a breakdown.
 - **Sync** - your personal list and settings sync via your Chrome profile
-  (`chrome.storage.sync`). Seen-job history stays local to the machine.
+  (`chrome.storage.sync`).
 - **Private** - no network requests, no analytics, nothing leaves your browser.
 
 ## Install (developer mode)
@@ -82,10 +78,10 @@ toggles) or the options page (full category manager, import/export as JSON).
 ## Debugging
 
 - **Options → Debug** logs every filter decision to the page's DevTools console,
-  prefixed `[JPF]` (what was extracted from each card, which rule matched, seen counts).
+  prefixed `[JPF]` (what was extracted from each card, which rule matched).
 - **Reveal mode** (popup or options) shows filtered cards with a red outline and a
   badge explaining why they matched, instead of hiding them.
-- Popup shows live per-page stats: blocked / seen-before / total scanned. If
+- Popup shows live per-page stats: blocked / total scanned. If
   "scanned" is 0 on a job page, the site's selectors have probably changed - see below.
 
 ## Contributing / fixing broken selectors
@@ -111,7 +107,7 @@ src/common/             shipped blocklist + matching (shared by all contexts)
 src/content/            adapters + filtering logic + injected styles
 src/popup/              toolbar popup (quick actions, picker)
 src/options/            full settings page
-src/background.js       service worker: badge, context menu, pruning
+src/background.js       service worker: badge, context menu
 tools/promote.js        move a company into the shipped list (npm run promote)
 tools/gen_icons.py      regenerates icons/ (pure-stdlib Python)
 ```

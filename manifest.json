@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Job Board Sweeper",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Hide companies from job posting websites (JobRight AI, LinkedIn, Indeed). Comes pre-loaded with a list of job boards that spam job postings.",
-  "permissions": ["storage", "alarms", "contextMenus"],
+  "permissions": ["storage", "contextMenus"],
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

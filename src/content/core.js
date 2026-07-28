@@ -15,10 +15,7 @@
     settings: { ...JPF_DEFAULTS.settings },
     categoryState: {}, // user's per-category customizations (jpfCategoryState)
     compiled: [], // compiled effective blocklist
-    seen: {}, // jobKey -> { n: sightings, t: lastSeen ms }
-    countedThisLoad: new Set(), // jobs already counted during this page load
     picking: false,
-    saveTimer: null,
     scanTimer: null,
     statsTimer: null,
   };
@@ -38,14 +35,11 @@
       jpfSettings: JPF_DEFAULTS.settings,
       jpfCategoryState: {},
     });
-    const local = await chrome.storage.local.get({ jpfSeen: {} });
     state.settings = { ...JPF_DEFAULTS.settings, ...sync.jpfSettings };
     state.categoryState = sync.jpfCategoryState || {};
     recompile();
-    state.seen = local.jpfSeen || {};
     log('loaded', {
       effectiveEntries: state.compiled.length,
-      seenJobs: Object.keys(state.seen).length,
       settings: state.settings,
     });
   }
@@ -54,33 +48,6 @@
   // still injected - chrome.* calls from such an orphaned script throw
   // "Extension context invalidated".
   const contextAlive = () => Boolean(chrome.runtime && chrome.runtime.id);
-
-  function scheduleSaveSeen() {
-    clearTimeout(state.saveTimer);
-    state.saveTimer = setTimeout(() => {
-      if (!contextAlive()) return;
-      chrome.storage.local.set({ jpfSeen: state.seen });
-    }, 1500);
-  }
-
-  // Record one sighting of a job. A job is counted at most once per page
-  // load, so scrolling past the same card repeatedly doesn't inflate counts.
-  function noteSighting(key) {
-    const now = Date.now();
-    const ttlMs = state.settings.seenTtlDays * 864e5;
-    let rec = state.seen[key];
-    if (rec && now - rec.t > ttlMs) rec = null; // expired - start over
-    if (!state.countedThisLoad.has(key)) {
-      rec = { n: (rec ? rec.n : 0) + 1, t: now };
-      state.seen[key] = rec;
-      state.countedThisLoad.add(key);
-      scheduleSaveSeen();
-    } else if (!rec) {
-      rec = { n: 1, t: now };
-      state.seen[key] = rec;
-    }
-    return rec;
-  }
 
   // ---------- DOM decoration ----------
 
@@ -409,13 +376,6 @@
         `${info.company} - ${hit.cat || 'blocked'} (rule “${hit.raw}”)`,
         state.settings.blockedAction
       );
-      return;
-    }
-
-    const rec = noteSighting(key);
-    if (state.settings.dupeEnabled && rec.n >= state.settings.dupeThreshold) {
-      log('duplicate:', info.title || key, `seen ${rec.n}×`);
-      decorate(container, 'dupe', `Seen ${rec.n}× - ${info.company}`, state.settings.dupeAction);
     }
   }
 
@@ -443,7 +403,6 @@
     return {
       scanned: document.querySelectorAll('[data-jpf-key]').length,
       blocked: document.querySelectorAll('[data-jpf-kind="blocked"]').length,
-      duped: document.querySelectorAll('[data-jpf-kind="dupe"]').length,
     };
   }
 

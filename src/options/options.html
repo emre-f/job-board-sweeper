@@ -29,34 +29,6 @@
       </section>
 
       <section>
-        <h2>Duplicate jobs</h2>
-        <label class="check">
-          <input type="checkbox" id="dupeEnabled" /> Mark jobs I've already seen
-        </label>
-        <label class="field">
-          Already-seen jobs are
-          <select id="dupeAction">
-            <option value="dim">dimmed with a "Seen N×" badge</option>
-            <option value="hide">hidden completely</option>
-          </select>
-        </label>
-        <label class="field">
-          Mark as duplicate from sighting #
-          <input type="number" id="dupeThreshold" min="2" max="20" />
-          <span class="hint">(2 = the first time is shown normally, repeats get marked)</span>
-        </label>
-        <label class="field">
-          Forget a job after
-          <input type="number" id="seenTtlDays" min="1" max="90" />
-          days without seeing it
-        </label>
-        <div class="field">
-          <span id="seenCount">…</span>
-          <button type="button" id="clearSeen">Clear seen-job history</button>
-        </div>
-      </section>
-
-      <section>
         <h2>Debug</h2>
         <label class="check">
           <input type="checkbox" id="debug" />

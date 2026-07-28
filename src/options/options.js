@@ -14,11 +14,6 @@ function flash(text) {
   flash._t = setTimeout(() => (el.textContent = ''), 2500);
 }
 
-async function refreshSeenCount() {
-  const { jpfSeen } = await chrome.storage.local.get({ jpfSeen: {} });
-  $('#seenCount').textContent = `${Object.keys(jpfSeen).length} jobs remembered.`;
-}
-
 async function patchCategoryState(mutate) {
   const { jpfCategoryState } = await getSync();
   mutate(jpfCategoryState);
@@ -172,13 +167,8 @@ async function load() {
   $('#enabled').checked = !!s.enabled;
   $('#blockedAction').value = s.blockedAction;
   $('#revealMode').checked = !!s.revealMode;
-  $('#dupeEnabled').checked = !!s.dupeEnabled;
-  $('#dupeAction').value = s.dupeAction;
-  $('#dupeThreshold').value = s.dupeThreshold;
-  $('#seenTtlDays').value = s.seenTtlDays;
   $('#debug').checked = !!s.debug;
   renderCategories(jpfCategoryState);
-  refreshSeenCount();
 }
 
 async function saveSettings() {
@@ -186,10 +176,6 @@ async function saveSettings() {
     enabled: $('#enabled').checked,
     blockedAction: $('#blockedAction').value,
     revealMode: $('#revealMode').checked,
-    dupeEnabled: $('#dupeEnabled').checked,
-    dupeAction: $('#dupeAction').value,
-    dupeThreshold: Math.max(2, parseInt($('#dupeThreshold').value, 10) || 2),
-    seenTtlDays: Math.max(1, parseInt($('#seenTtlDays').value, 10) || 5),
     debug: $('#debug').checked,
   };
   await chrome.storage.sync.set({ jpfSettings: settings });
@@ -210,12 +196,6 @@ $('#addCategory').addEventListener('click', async () => {
   });
   input.value = '';
   flash(`Created category “${name}”`);
-});
-
-$('#clearSeen').addEventListener('click', async () => {
-  await chrome.storage.local.set({ jpfSeen: {} });
-  refreshSeenCount();
-  flash('Seen-job history cleared');
 });
 
 $('#export').addEventListener('click', async () => {

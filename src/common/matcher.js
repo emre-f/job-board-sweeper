@@ -16,7 +16,7 @@ function jpfKey(s) {
     .trim();
 }
 
-// Loose normalization - used ONLY for seen-job keys (duplicate detection),
+// Loose normalization - used ONLY for building stable per-card DOM keys,
 // never for blocklist matching.
 function jpfNormalize(s) {
   return String(s || '')
