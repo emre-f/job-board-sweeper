@@ -1,0 +1,226 @@
+:root {
+  color-scheme: light dark;
+  accent-color: #f0b429;
+}
+
+body {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  font: 14px/1.6 system-ui, -apple-system, sans-serif;
+}
+
+h1 {
+  margin: 0 0 2px;
+  font-size: 20px;
+}
+
+.sub {
+  margin: 0 0 20px;
+  opacity: 0.7;
+}
+
+section {
+  margin-bottom: 26px;
+  padding: 14px 16px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 10px;
+}
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+}
+
+h3 {
+  margin: 16px 0 6px;
+  font-size: 13px;
+}
+
+.defaults-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 4px 12px;
+  margin-bottom: 10px;
+}
+
+.def-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cat-box {
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.cat-box.off {
+  opacity: 0.55;
+}
+
+.cat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.cat-head strong {
+  font-size: 14px;
+}
+
+.cat-tag {
+  font-size: 11px;
+  opacity: 0.55;
+}
+
+.cat-head .spacer {
+  flex: 1;
+}
+
+.cat-head button {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 2px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  background: rgba(128, 128, 128, 0.15);
+  font-size: 12px;
+}
+
+.chip button {
+  border: none;
+  background: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+}
+
+.cat-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.cat-add input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.cat-add button {
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+.btn-row input[type='text'] {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.check,
+.field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+
+.hint {
+  font-size: 12px;
+  opacity: 0.65;
+}
+
+code {
+  background: rgba(128, 128, 128, 0.15);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+input[type='number'] {
+  width: 64px;
+  padding: 4px 6px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 6px;
+  font: inherit;
+}
+
+select {
+  padding: 4px 6px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 6px;
+  font: inherit;
+}
+
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 8px;
+  font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+  resize: vertical;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+button,
+.file-btn {
+  padding: 6px 14px;
+  border: 1px solid rgba(128, 128, 128, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+button.primary {
+  background: #f0b429;
+  border-color: #f0b429;
+  color: #111827;
+}
+
+.file-btn input {
+  display: none;
+}
+
+#flash {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  font-size: 13px;
+  color: #f0b429;
+  font-weight: 600;
+}

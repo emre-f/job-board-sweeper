@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Job Board Sweeper</h1>
+      <label class="switch" title="Enable / disable filtering">
+        <input type="checkbox" id="enabled" />
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <div id="status" class="status">…</div>
+
+    <label class="row">
+      <input type="checkbox" id="reveal" />
+      Reveal filtered jobs (outline instead of hiding)
+    </label>
+
+    <div class="add-row">
+      <input type="text" id="companyInput" placeholder="Block a company…" />
+      <select id="categorySelect" title="Category"></select>
+      <button id="addBtn">Add</button>
+    </div>
+
+    <div class="pick-row">
+      <button id="pickBtn">Pick a job on the page to block…</button>
+    </div>
+
+    <div class="list-head"><span id="listCount"></span></div>
+    <ul id="blocklist"></ul>
+
+    <footer>
+      <button id="optionsBtn">Options</button>
+      <span id="version"></span>
+    </footer>
+
+    <script src="../common/constants.js"></script>
+    <script src="../common/matcher.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

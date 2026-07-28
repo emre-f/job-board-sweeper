@@ -1,0 +1,9 @@
+{
+  "name": "job-board-sweeper",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Chrome extension that hides job-spam companies and already-seen duplicates on LinkedIn, Indeed and Jobright.",
+  "scripts": {
+    "promote": "node tools/promote.js"
+  }
+}

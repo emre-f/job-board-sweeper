@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Job Board Sweeper - Options</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <h1>Job Board Sweeper</h1>
+    <p class="sub">All changes apply immediately to open job-site tabs.</p>
+    <div id="flash"></div>
+
+    <form id="settingsForm">
+      <section>
+        <h2>Filtering</h2>
+        <label class="check"><input type="checkbox" id="enabled" /> Enable filtering</label>
+        <label class="field">
+          Blocked companies are
+          <select id="blockedAction">
+            <option value="hide">hidden completely</option>
+            <option value="dim">dimmed with a badge</option>
+          </select>
+        </label>
+        <label class="check">
+          <input type="checkbox" id="revealMode" />
+          Reveal mode - outline filtered jobs instead of hiding/dimming (for checking what got
+          caught)
+        </label>
+      </section>
+
+      <section>
+        <h2>Duplicate jobs</h2>
+        <label class="check">
+          <input type="checkbox" id="dupeEnabled" /> Mark jobs I've already seen
+        </label>
+        <label class="field">
+          Already-seen jobs are
+          <select id="dupeAction">
+            <option value="dim">dimmed with a "Seen N×" badge</option>
+            <option value="hide">hidden completely</option>
+          </select>
+        </label>
+        <label class="field">
+          Mark as duplicate from sighting #
+          <input type="number" id="dupeThreshold" min="2" max="20" />
+          <span class="hint">(2 = the first time is shown normally, repeats get marked)</span>
+        </label>
+        <label class="field">
+          Forget a job after
+          <input type="number" id="seenTtlDays" min="1" max="90" />
+          days without seeing it
+        </label>
+        <div class="field">
+          <span id="seenCount">…</span>
+          <button type="button" id="clearSeen">Clear seen-job history</button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Debug</h2>
+        <label class="check">
+          <input type="checkbox" id="debug" />
+          Log filter decisions to the page console (prefix <code>[JPF]</code>)
+        </label>
+      </section>
+    </form>
+
+    <section>
+      <h2>Categories &amp; blocked companies</h2>
+      <p class="hint">
+        Matching is <strong>exact</strong>: an entry only blocks a company whose displayed name is
+        identical (whitespace aside) - <code>JobRight AI</code> does not block "Jobright.ai". Add
+        one entry per name variant, or use <code>*</code> wildcards for deliberately looser,
+        case-insensitive matching, e.g. <code>Jobright*</code> or <code>*staffing*</code>.
+      </p>
+      <p class="hint">
+        <strong>Shipped</strong> categories come with the extension and apply to every user - to
+        change those for everyone, edit <code>src/common/constants.js</code> or run
+        <code>npm run promote -- &lt;category-id&gt; "Company"</code>. Everything you change here
+        (disabling categories or entries, your additions, custom categories) is
+        <em>only for you</em>.
+      </p>
+      <div id="categories"></div>
+      <div class="btn-row">
+        <input type="text" id="newCatName" placeholder="New category name (e.g. Consulting)…" />
+        <button type="button" id="addCategory" class="primary">Add category</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Data</h2>
+      <div class="btn-row">
+        <button type="button" id="export">Export settings (JSON)</button>
+        <label class="file-btn">
+          Import settings (JSON)
+          <input type="file" id="importFile" accept="application/json" />
+        </label>
+      </div>
+    </section>
+
+    <script src="../common/constants.js"></script>
+    <script src="../common/matcher.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>

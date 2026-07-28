@@ -1,0 +1,53 @@
+{
+  "manifest_version": 3,
+  "name": "Job Board Sweeper",
+  "version": "0.3.0",
+  "description": "Hide companies from job posting websites (JobRight AI, LinkedIn, Indeed). Comes pre-loaded with a list of job boards that spam job postings.",
+  "permissions": ["storage", "alarms", "contextMenus"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "64": "icons/icon64.png",
+    "96": "icons/icon96.png",
+    "128": "icons/icon128.png",
+    "256": "icons/icon256.png"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "64": "icons/icon64.png",
+      "96": "icons/icon96.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "background": {
+    "service_worker": "src/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.linkedin.com/*",
+        "https://linkedin.com/*",
+        "https://*.indeed.com/*",
+        "https://jobright.ai/*",
+        "https://www.jobright.ai/*"
+      ],
+      "js": [
+        "src/common/constants.js",
+        "src/common/matcher.js",
+        "src/content/adapters.js",
+        "src/content/core.js"
+      ],
+      "css": ["src/content/styles.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
