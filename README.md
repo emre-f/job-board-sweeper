@@ -1,22 +1,31 @@
 # <img src="icons/icon128.png" width="36" alt="" align="top" /> Job Board Sweeper
 
-A Chrome extension that cleans up job boards by hiding **spam companies**:
-job aggregators (Jobright, Lensa, …), AI data-labelling farms, and any custom
-category you define.
+A Chrome extension that cleans up job boards by hiding spam companies such as:
+- Job cross-posters (i.e. Jobright)
+- AI data-labelling jobs (i.e. Outlier)
+- *any* other custom category or company you want GONE
 
 Works on **LinkedIn**, **Indeed**, and **Jobright** (More might be added later!).
 
 ## Why
 
-Job boards are drowning in spam: the same cross-posted listings from aggregators
-and gig farms show up over and over, on every site. The boards' own tools don't
-really help - LinkedIn lets you filter with `NOT "Company ABC"` in the search
-box, but it's unreliable, has to be retyped constantly, and seems to break down
-once you're excluding more than a handful of companies. And whatever you set up
-on one site does nothing on the next one.
+Job boards are drowning in spam, For every 100 job postings I come across maybe 60 of them I wish I wouldn't even come across. The boards' own tools don't
+really help: LinkedIn lets you filter with `NOT "Company ABC"` in the search
+box, but it has to be retyped constantly. Also it is unreliable since it seems to break down once you exclude more than a handful of companies.
 
 I wanted something **easier and persistent**: block a company once, with one
-click, and never see it again - across every job site I use.
+click, and never see it again... across every job site.
+
+## Install (developer mode)
+
+1. Clone this repo.
+2. Open `chrome://extensions`.
+3. Turn on **Developer mode** (top right).
+4. Click **Load unpacked** and select the repo folder.
+5. Open LinkedIn/Indeed/Jobright and enjoy the silence.
+
+After pulling changes, hit the ↻ reload button on the extension card and refresh
+your job-site tabs.
 
 ## Features
 
@@ -48,17 +57,6 @@ click, and never see it again - across every job site I use.
 - **Sync** - your personal list and settings sync via your Chrome profile
   (`chrome.storage.sync`).
 - **Private** - no network requests, no analytics, nothing leaves your browser.
-
-## Install (developer mode)
-
-1. Clone this repo.
-2. Open `chrome://extensions`.
-3. Turn on **Developer mode** (top right).
-4. Click **Load unpacked** and select the repo folder.
-5. Open LinkedIn/Indeed/Jobright and enjoy the silence.
-
-After pulling changes, hit the ↻ reload button on the extension card and refresh
-your job-site tabs.
 
 ## How matching works
 
@@ -98,19 +96,6 @@ company-name element, and update the selectors (they're ordered fallback lists,
 so append rather than replace when possible). PRs welcome.
 
 The default blocklist lives in [`src/common/constants.js`](src/common/constants.js).
-
-## Repo layout
-
-```
-manifest.json           MV3 manifest
-src/common/             shipped blocklist + matching (shared by all contexts)
-src/content/            adapters + filtering logic + injected styles
-src/popup/              toolbar popup (quick actions, picker)
-src/options/            full settings page
-src/background.js       service worker: badge, context menu
-tools/promote.js        move a company into the shipped list (npm run promote)
-tools/gen_icons.py      regenerates icons/ (pure-stdlib Python)
-```
 
 ## License
 
