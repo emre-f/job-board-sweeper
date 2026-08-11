@@ -1,2 +1,6 @@
 .DS_Store
 node_modules/
+
+# Local page dumps used to debug site selectors (can contain personal data)
+*-linkedin.html
+*.dump.html

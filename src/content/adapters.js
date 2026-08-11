@@ -20,11 +20,35 @@ const JPF_ADAPTERS = [
   {
     id: 'linkedin',
     match: (h) => h === 'linkedin.com' || h.endsWith('.linkedin.com'),
-    // Logged-in job search / collections cards, plus logged-out "base" cards.
+    // Three generations of markup:
+    //  - 2026 "AI job search" UI: every class name is hashed, the only stable
+    //    hook is componentkey="job-card-component-ref-<jobid>" (the outer,
+    //    clickable card carries role="button"; an inner div repeats the key
+    //    and is skipped by core.js's nested-owner check).
+    //  - classic logged-in job search / collections cards
+    //  - logged-out "base" cards
     cardSelector:
+      'div[role="button"][componentkey^="job-card-component-ref-"], ' +
+      '[componentkey^="job-card-component-ref-"], ' +
       'li[data-occludable-job-id], div.job-card-container[data-job-id], .base-card.base-search-card, li.jobs-search-results__list-item',
-    container: (card) => card.closest('li') || card,
+    container: (card) =>
+      card.hasAttribute('componentkey') ? card : card.closest('li') || card,
     extract(card) {
+      const ck = card.getAttribute('componentkey') || '';
+      const ckMatch = ck.match(/^job-card-component-ref-(\w+)/);
+      if (ckMatch) {
+        // New UI has no semantic classes - go by structure. Card paragraphs
+        // are ordered: [0] title, [1] company, [2] location, then meta rows.
+        // The title <p> holds a visually-hidden a11y span (with extra text
+        // like "(Verified job)") plus an aria-hidden span with the visible
+        // title - prefer the latter.
+        const ps = card.querySelectorAll('p');
+        const titleVis = ps[0] && ps[0].querySelector('span[aria-hidden="true"]');
+        const titleEl = titleVis || ps[0];
+        const clean = (el) =>
+          (el && el.textContent ? el.textContent.trim().replace(/\s+/g, ' ') : '');
+        return { id: ckMatch[1], company: clean(ps[1]), title: clean(titleEl) };
+      }
       const idEl = card.matches('[data-occludable-job-id], [data-job-id]')
         ? card
         : card.querySelector('[data-occludable-job-id], [data-job-id]');
