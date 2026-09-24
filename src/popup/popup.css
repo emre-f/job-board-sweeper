@@ -37,6 +37,19 @@ h1 {
   cursor: pointer;
 }
 
+/* Shown when a supported site's tab has no live content script. */
+.status.warn {
+  opacity: 1;
+  color: #b45309;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status.warn {
+    color: #f0b429;
+  }
+}
+
 .add-row {
   display: flex;
   gap: 6px;

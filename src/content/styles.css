@@ -239,6 +239,30 @@
   font: 13px system-ui, -apple-system, sans-serif;
 }
 
+.jpf-modal-sub {
+  margin: 0 0 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--jpf-border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jpf-modal-sub + .jpf-cat-new {
+  margin: 0 0 14px;
+  align-items: center;
+}
+
+.jpf-cat-new input[type='number'] {
+  flex: 0 0 72px;
+}
+
+.jpf-modal-unit {
+  flex: 1;
+  font-size: 13px;
+  color: var(--jpf-muted);
+}
+
 .jpf-cat-create {
   background: var(--jpf-accent);
   border-color: var(--jpf-accent);

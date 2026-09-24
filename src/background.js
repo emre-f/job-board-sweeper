@@ -1,5 +1,6 @@
 // Background service worker: seeds defaults on install, registers the
-// right-click context menu, and shows a per-tab badge with the filtered count.
+// right-click context menu, prunes expired timeouts, and shows a per-tab
+// badge with the filtered count.
 
 importScripts('common/constants.js', 'common/matcher.js');
 
@@ -10,6 +11,16 @@ const JPF_SITES = [
   'https://jobright.ai/*',
   'https://www.jobright.ai/*',
 ];
+
+// Remove expired timeout-bucket entries. Expired entries never match anyway;
+// this only keeps the synced list (and its 8 KB quota) small.
+async function pruneTimeouts() {
+  const { jpfTimeouts } = await chrome.storage.sync.get({ jpfTimeouts: {} });
+  const { timeouts, changed } = jpfPruneTimeouts(jpfTimeouts);
+  if (changed) await chrome.storage.sync.set({ jpfTimeouts: timeouts });
+}
+
+chrome.runtime.onStartup.addListener(pruneTimeouts);
 
 chrome.runtime.onInstalled.addListener(async () => {
   const cur = await chrome.storage.sync.get([
@@ -42,6 +53,10 @@ chrome.runtime.onInstalled.addListener(async () => {
   await chrome.storage.sync.remove(['jpfBlocklist', 'jpfPersonal', 'jpfDisabledDefaults']);
   // Seen-job tracking was removed in 0.4 - drop any leftover history.
   await chrome.storage.local.remove('jpfSeen');
+  // 0.5 adds jpfTimeouts and new settings fields; no migration needed - every
+  // reader merges saved settings over JPF_DEFAULTS and treats a missing
+  // jpfTimeouts as an empty bucket. Existing categories are never touched.
+  await pruneTimeouts();
 
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
@@ -63,7 +78,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
 chrome.runtime.onMessage.addListener((msg, sender) => {
   if (msg && msg.type === 'jpf-stats' && sender.tab && sender.tab.id != null) {
-    const n = msg.stats.blocked || 0;
+    // `filtered` (blocked + timeout) since 0.5; `blocked` before.
+    const n = msg.stats.filtered ?? msg.stats.blocked ?? 0;
     chrome.action.setBadgeText({ tabId: sender.tab.id, text: n ? String(n) : '' });
   }
 });

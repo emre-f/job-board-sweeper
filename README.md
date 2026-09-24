@@ -7,6 +7,16 @@ A Chrome extension that cleans up job boards by hiding spam companies such as:
 
 Works on **LinkedIn**, **Indeed**, and **Jobright** (More might be added later!).
 
+## What's new in 0.5.0
+
+- **Timeout bucket** - applied to a company? Put it in timeout (90 days by
+  default, any length you like) and its jobs stay out of your way until the
+  timeout ends. Works on all supported sites.
+- Backwards compatible: your existing categories and blocked companies are
+  kept as they are.
+
+Full notes: [CHANGELOG.md](CHANGELOG.md).
+
 ## Why
 
 Job boards are drowning in spam, For every 100 job postings I come across maybe 60 of them I wish I wouldn't even come across. The boards' own tools don't
@@ -50,10 +60,16 @@ your job-site tabs.
     text if the card can't be detected);
   - popup → **Pick a job on the page** → click a card (Esc cancels).
   Every block shows an Undo toast.
+- **Timeout bucket** - the same dialog can put a company in **timeout** for a
+  number of days (default 90, change it per company or set a new default in
+  options). Use it after you apply somewhere, so you don't apply again to the
+  company's reposts while it has a reapply limit. Timed-out jobs are hidden
+  like blocked ones; the timeout ends by itself. Edit the days left or remove
+  companies on the options page. Works on every supported site.
 - **Reveal mode** - outlines filtered jobs in red instead of hiding them, so you can
   audit what the filter is doing.
-- **Badge counter** - the toolbar icon shows how many jobs were blocked on the
-  current tab; the popup shows a breakdown.
+- **Badge counter** - the toolbar icon shows how many jobs were filtered on the
+  current tab; the popup shows a breakdown (blocked / timeout).
 - **Sync** - your personal list and settings sync via your Chrome profile
   (`chrome.storage.sync`).
 - **Private** - no network requests, no analytics, nothing leaves your browser.

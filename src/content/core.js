@@ -14,6 +14,7 @@
   const state = {
     settings: { ...JPF_DEFAULTS.settings },
     categoryState: {}, // user's per-category customizations (jpfCategoryState)
+    timeouts: {}, // timeout bucket (jpfTimeouts): { companyName: expiresAtMs }
     compiled: [], // compiled effective blocklist
     picking: false,
     scanTimer: null,
@@ -34,12 +35,15 @@
     const sync = await chrome.storage.sync.get({
       jpfSettings: JPF_DEFAULTS.settings,
       jpfCategoryState: {},
+      jpfTimeouts: {},
     });
     state.settings = { ...JPF_DEFAULTS.settings, ...sync.jpfSettings };
     state.categoryState = sync.jpfCategoryState || {};
+    state.timeouts = sync.jpfTimeouts || {};
     recompile();
     log('loaded', {
       effectiveEntries: state.compiled.length,
+      timeouts: Object.keys(state.timeouts).length,
       settings: state.settings,
     });
   }
@@ -116,7 +120,8 @@
   // which category to block it under (or create a new category on the spot).
   // Built from divs with explicit colors - host-site styles for p/h tags
   // would otherwise bleed in (e.g. white text on LinkedIn's dark theme).
-  // Resolves to { catId } | { newCatName } | null (cancelled).
+  // Also offers the timeout bucket (hide the company for N days).
+  // Resolves to { catId } | { newCatName } | { timeoutDays } | null (cancelled).
   function jpfLabelModal(company) {
     return new Promise((resolve) => {
       document.querySelectorAll('.jpf-modal-backdrop').forEach((n) => n.remove());
@@ -188,6 +193,55 @@
       });
       cats.appendChild(newBtn);
 
+      // Timeout bucket: "Timeout for [90] days". The number input offers the
+      // presets as suggestions but takes any whole number of days.
+      const tHead = document.createElement('div');
+      tHead.className = 'jpf-modal-text jpf-modal-sub';
+      const current = jpfTimeoutMatch(company, state.timeouts);
+      tHead.textContent = current
+        ? `Or reset its timeout (${current.daysLeft} day${current.daysLeft === 1 ? '' : 's'} left):`
+        : 'Or put it in timeout (e.g. you applied there):';
+      tHead.title = 'Its jobs stay hidden until the timeout ends';
+      const tRow = document.createElement('div');
+      tRow.className = 'jpf-cat-new';
+      const days = document.createElement('input');
+      days.type = 'number';
+      days.min = '1';
+      days.max = '1825';
+      days.value = String(jpfCleanDays(state.settings.timeoutDays, 90));
+      days.title = 'Days';
+      const listId = 'jpf-timeout-presets';
+      if (!document.getElementById(listId)) {
+        const dl = document.createElement('datalist');
+        dl.id = listId;
+        for (const d of JPF_DEFAULTS.timeoutPresets) {
+          const o = document.createElement('option');
+          o.value = String(d);
+          dl.appendChild(o);
+        }
+        document.body.appendChild(dl);
+      }
+      days.setAttribute('list', listId);
+      const unit = document.createElement('span');
+      unit.className = 'jpf-modal-unit';
+      unit.textContent = 'days';
+      const tBtn = document.createElement('button');
+      tBtn.type = 'button';
+      tBtn.className = 'jpf-cat-btn jpf-cat-create';
+      tBtn.textContent = current ? 'Reset timeout' : 'Timeout';
+      const submitTimeout = () => {
+        const d = jpfCleanDays(days.value, 0);
+        if (d) done({ timeoutDays: d });
+        else days.focus();
+      };
+      tBtn.addEventListener('click', submitTimeout);
+      days.addEventListener('keydown', (e) => {
+        e.stopPropagation();
+        if (e.key === 'Enter') submitTimeout();
+        if (e.key === 'Escape') done(null);
+      });
+      tRow.append(days, unit, tBtn);
+
       const row = document.createElement('div');
       row.className = 'jpf-modal-btns';
       const cancel = document.createElement('button');
@@ -199,7 +253,7 @@
       });
       document.addEventListener('keydown', onKey, true);
       row.append(cancel);
-      modal.append(title, name, text, cats, row);
+      modal.append(title, name, text, cats, tHead, tRow, row);
       backdrop.append(modal);
       document.body.append(backdrop);
     });
@@ -217,7 +271,24 @@
       return;
     }
     const choice = await jpfLabelModal(company);
-    if (choice) labelCompany(company, choice);
+    if (!choice) return;
+    if (choice.timeoutDays) timeoutCompany(company, choice.timeoutDays);
+    else labelCompany(company, choice);
+  }
+
+  async function timeoutCompany(company, days) {
+    const { jpfTimeouts } = await chrome.storage.sync.get({ jpfTimeouts: {} });
+    const before = { ...jpfTimeouts };
+    try {
+      await chrome.storage.sync.set({ jpfTimeouts: jpfSetTimeout(jpfTimeouts, company, days) });
+    } catch (err) {
+      showToast(`Could not save the timeout: ${err.message}`, null);
+      return;
+    }
+    // storage.onChanged triggers the rescan that actually hides the cards.
+    showToast(`“${company}” is in timeout for ${days} day${days === 1 ? '' : 's'}`, async () => {
+      await chrome.storage.sync.set({ jpfTimeouts: before });
+    });
   }
 
   async function labelCompany(company, choice) {
@@ -376,6 +447,15 @@
         `${info.company} - ${hit.cat || 'blocked'} (rule “${hit.raw}”)`,
         state.settings.blockedAction
       );
+      return;
+    }
+
+    // The timeout bucket uses the same hide/dim setting as blocked companies.
+    const timeout = info.company ? jpfTimeoutMatch(info.company, state.timeouts) : null;
+    if (timeout) {
+      const left = `${timeout.daysLeft} day${timeout.daysLeft === 1 ? '' : 's'} left`;
+      log('timeout:', info.company, `(${left})`, info.title);
+      decorate(container, 'timeout', `${info.company} - timeout, ${left}`, state.settings.blockedAction);
     }
   }
 
@@ -400,9 +480,14 @@
   // ---------- stats / messaging ----------
 
   function computeStats() {
+    const count = (kind) => document.querySelectorAll(`[data-jpf-kind="${kind}"]`).length;
+    const blocked = count('blocked');
+    const timeout = count('timeout');
     return {
       scanned: document.querySelectorAll('[data-jpf-key]').length,
-      blocked: document.querySelectorAll('[data-jpf-kind="blocked"]').length,
+      filtered: blocked + timeout, // drives the toolbar badge
+      blocked,
+      timeout,
     };
   }
 
@@ -436,6 +521,7 @@
       state.settings = { ...JPF_DEFAULTS.settings, ...changes.jpfSettings.newValue };
     }
     if (changes.jpfCategoryState) state.categoryState = changes.jpfCategoryState.newValue || {};
+    if (changes.jpfTimeouts) state.timeouts = changes.jpfTimeouts.newValue || {};
     recompile();
     log('settings/blocklist changed - reprocessing');
     reprocessAll();

@@ -2,6 +2,12 @@
 
 ## Repost & "fake job" detection (higher risk - deliberately not in v0.1)
 
+Tried in 0.5 and dropped: LinkedIn shows "Reposted … ago" only in the opened
+job's details pane - not on list cards, and not in the list's network data
+(checked 2026-09). So a label-based "hide reposted" can only react after you
+open a job, and fetching each job's details in the background would mean
+automated requests on the user's account. The ideas below remain.
+
 The idea: flag jobs that look perpetually open / reposted rather than real openings.
 
 Possible signals, roughly in order of reliability:

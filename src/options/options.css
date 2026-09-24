@@ -129,6 +129,37 @@ h3 {
   font-size: 13px;
 }
 
+.timeout-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+  font-size: 13px;
+}
+
+.timeout-row .name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeout-row .until {
+  font-size: 11px;
+  opacity: 0.55;
+}
+
+.timeout-row button {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.cat-add input[type='number'] {
+  flex: 0 0 64px;
+}
+
 .cat-add button {
   padding: 4px 12px;
   font-size: 13px;

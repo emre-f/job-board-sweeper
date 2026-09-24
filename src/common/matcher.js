@@ -125,3 +125,57 @@ function jpfMatch(companyName, compiled) {
   }
   return null;
 }
+
+// ---------- timeout bucket ----------
+//
+// Companies you applied to and don't want to see again for a while.
+// Stored in chrome.storage.sync `jpfTimeouts` as { [companyName]: expiresAtMs }.
+// Matching is exact (jpfKey), same as the blocklist. Expired entries never
+// match and are pruned by the background worker and the options page.
+
+const JPF_DAY_MS = 24 * 60 * 60 * 1000;
+
+// Whole days left until expiresAt (rounded up, so "1 day left" until it ends).
+function jpfDaysLeft(expiresAt, now = Date.now()) {
+  return Math.max(0, Math.ceil((expiresAt - now) / JPF_DAY_MS));
+}
+
+// Returns { name, expiresAt, daysLeft } for an active timeout, or null.
+function jpfTimeoutMatch(companyName, timeouts, now = Date.now()) {
+  const key = jpfKey(companyName);
+  if (!key || !timeouts) return null;
+  for (const [name, expiresAt] of Object.entries(timeouts)) {
+    if (jpfKey(name) === key && expiresAt > now) {
+      return { name, expiresAt, daysLeft: jpfDaysLeft(expiresAt, now) };
+    }
+  }
+  return null;
+}
+
+// Drop expired / malformed entries. Returns { timeouts, changed }.
+function jpfPruneTimeouts(timeouts, now = Date.now()) {
+  const out = {};
+  let changed = false;
+  for (const [name, expiresAt] of Object.entries(timeouts || {})) {
+    if (typeof expiresAt === 'number' && expiresAt > now && jpfKey(name)) out[name] = expiresAt;
+    else changed = true;
+  }
+  return { timeouts: out, changed };
+}
+
+// Add (or reset) a company's timeout, replacing any entry with the same key.
+function jpfSetTimeout(timeouts, companyName, days, now = Date.now()) {
+  const key = jpfKey(companyName);
+  const out = {};
+  for (const [name, exp] of Object.entries(timeouts || {})) {
+    if (jpfKey(name) !== key) out[name] = exp;
+  }
+  out[key] = now + days * JPF_DAY_MS;
+  return out;
+}
+
+// Clamp a user-entered day count to a sane whole number (1 day - 5 years).
+function jpfCleanDays(v, fallback) {
+  const n = Math.round(Number(v));
+  return Number.isFinite(n) && n >= 1 ? Math.min(n, 1825) : fallback;
+}

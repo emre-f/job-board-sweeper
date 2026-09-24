@@ -29,6 +29,29 @@
       </section>
 
       <section>
+        <h2>Timeout bucket</h2>
+        <p class="hint">
+          Put a company in timeout after you apply, so its reposts don't tempt you again (many
+          companies limit how often you can apply - 90 days is common). Its jobs are
+          hidden/dimmed like a blocked company until the timeout ends; then it leaves the bucket
+          by itself. Add companies here, from the popup, or with <strong>Label company</strong> on
+          any job card. Works on every supported site.
+        </p>
+        <label class="field">
+          Default timeout length
+          <input type="number" id="timeoutDays" min="1" max="1825" list="timeoutPresets" />
+          days
+        </label>
+        <datalist id="timeoutPresets"></datalist>
+        <div id="timeouts"></div>
+        <div class="cat-add">
+          <input type="text" id="timeoutName" placeholder="Company name (exact, as shown on the job card)…" />
+          <input type="number" id="timeoutAddDays" min="1" max="1825" list="timeoutPresets" title="Days" />
+          <button type="button" id="timeoutAdd">Add</button>
+        </div>
+      </section>
+
+      <section>
         <h2>Debug</h2>
         <label class="check">
           <input type="checkbox" id="debug" />

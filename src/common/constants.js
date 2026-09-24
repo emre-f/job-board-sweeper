@@ -7,7 +7,11 @@ const JPF_DEFAULTS = {
     blockedAction: 'hide', // what to do with blocklisted companies: 'hide' | 'dim'
     revealMode: false, // outline filtered jobs instead of hiding/dimming them
     debug: false, // verbose console logging, prefixed [JPF]
+    timeoutDays: 90, // default length when you put a company in the timeout bucket
   },
+
+  // Length presets offered in the timeout pickers (days). Any whole number works.
+  timeoutPresets: [30, 60, 90, 180, 365],
 
   // The SHIPPED categories - they apply to every user of the extension.
   // To change them for everyone: edit this array, or run
